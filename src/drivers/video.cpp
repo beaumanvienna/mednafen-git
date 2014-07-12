@@ -48,6 +48,7 @@
 #include "scalebit.h"
 #include "hqxx-common.h"
 #include "2xSaI.h"
+#include "../md/osd_cpu.h"
 #endif
 
 typedef struct
@@ -143,6 +144,27 @@ static int NeedClear = 0;
 static uint32 LastBBClearTime = 0;
 
 static MDFN_PixelFormat pf_overlay, pf_normal;
+
+//debug jc
+bool verifyIsNumber(char * string)
+{
+    int x = 0;
+    int len;
+    
+    if (string == NULL)
+    {
+      return false;
+    }
+    
+    len = strlen(string);
+
+    while(x < len) {
+           if(!isdigit(*(string+x)))
+           return false;
+           ++x;
+    }
+    return true;
+}
 
 static void MarkNeedBBClear(void)
 {
@@ -446,22 +468,12 @@ int GetSpecialScalerID(const std::string &special_string)
 
 static bool weset_glstvb = false; 
 static uint32 real_rs, real_gs, real_bs, real_as;
-extern int displayNumber;
 
 int InitVideo(MDFNGI *gi)
 {
  SDL_DisplayMode mode;
  int window_flags = 0; //SDL_RESIZABLE;
  int desbpp;
- 
-  // debug jc
-  int numdisplays; 
-  numdisplays = SDL_GetNumVideoDisplays();
- 
-  for (int i=0;i<numdisplays;i++)
-  {
-    MDFN_printf(_("debug jc: display %d is called '%s'\n"),i,SDL_GetDisplayName(i));
-  }
 
  VideoGI = gi;
 
@@ -688,29 +700,54 @@ int InitVideo(MDFNGI *gi)
  if(windowchanged) {
    
     //debug jc
-    MDFN_printf(_("debug jc: SDL_CreateWindow\n"));
-   
-    if (displayNumber != -1)
+    int displayNumber;
+    long tempValue = 0;
+    char * displayNumberStr;
+    
+    // setup default display
+    displayNumber = 0;
+    
+    //get environment
+    displayNumberStr=getenv("SDL_VIDEO_FULLSCREEN_HEAD");
+    
+    // check if a valid number was found
+    if(verifyIsNumber(displayNumberStr))
     {
-      MDFN_printf(_("debug jc: Mednafen is running on display %d (%s)\n"),displayNumber,SDL_GetDisplayName(displayNumber));
-      if(!(window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNumber), SDL_WINDOWPOS_UNDEFINED, newwidth, newheight, window_flags)))
+      // a valid number was found
+      printf("valif number found\n");
+      
+      //convert to integer
+      tempValue = atoi(displayNumberStr);
+      
+      //check if larger equal zero and less display numbers 
+      if ((tempValue >=0) && (tempValue < SDL_GetNumVideoDisplays()))
       {
-        MDFND_PrintError(SDL_GetError()); 
-        MDFN_indent(-1);
-        return(0);
+	  // check passed
+	  displayNumber = tempValue;
+	  printf("check passed\n");
       }
-    } 
-    else
-    {
-      if(!(window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, newwidth, newheight, window_flags)))
+      else 
       {
-        MDFND_PrintError(SDL_GetError()); 
-        MDFN_indent(-1);
-        return(0);
+	printf("check not passed\n");
       }
     }
+    else
+    {
+      printf("no valid number found\n");
+    }
 
-   
+    
+    
+    // atoi returns zero if it fails to convert a valid integer. This is at the same time the default display.
+    //displayNumber=atoi(); 
+    
+    MDFN_printf(_("debug jc: Mednafen is running on display %d called %s\n"),displayNumber,SDL_GetDisplayName(displayNumber));
+    if(!(window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNumber), SDL_WINDOWPOS_UNDEFINED, newwidth, newheight, window_flags)))
+    {
+      MDFND_PrintError(SDL_GetError()); 
+      MDFN_indent(-1);
+      return(0);
+    }
 
    SDL_SetWindowIcon(window, IconSurface);
 
