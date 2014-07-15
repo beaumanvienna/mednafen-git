@@ -17,7 +17,8 @@ sudo apt-get install -y automake autopoint bison build-essential ccache cmake cu
 # so no need to apply it here.
 # 
 
-
+git clone https://github.com/beaumanvienna
+cd mednafen-git
 git checkout mednafen-0.9.36.2-SDL2-dual-head
 autoreconf -fi
 ./configure
