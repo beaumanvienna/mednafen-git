@@ -145,7 +145,7 @@ static uint32 LastBBClearTime = 0;
 
 static MDFN_PixelFormat pf_overlay, pf_normal;
 
-//debug jc
+//RetroRig Dual Head Support
 bool verifyIsNumber(char * string)
 {
     int x = 0;
@@ -699,7 +699,7 @@ int InitVideo(MDFNGI *gi)
 
  if(windowchanged) {
    
-    //debug jc
+    //RetroRig Dual Head Support
     int displayNumber;
     long tempValue = 0;
     char * displayNumberStr;
@@ -714,34 +714,41 @@ int InitVideo(MDFNGI *gi)
     if(verifyIsNumber(displayNumberStr))
     {
       // a valid number was found
-      printf("valif number found\n");
-      
+#ifdef DEBUG_RETRORIG
+      printf("valid number found\n");
+#endif
       //convert to integer
       tempValue = atoi(displayNumberStr);
       
       //check if larger equal zero and less display numbers 
       if ((tempValue >=0) && (tempValue < SDL_GetNumVideoDisplays()))
       {
-	  // check passed
-	  displayNumber = tempValue;
-	  printf("check passed\n");
+          // check passed
+          displayNumber = tempValue;
+#ifdef DEBUG_RETRORIG
+          printf("check passed\n");
+#endif
       }
       else 
       {
-	printf("check not passed\n");
+#ifdef DEBUG_RETRORIG
+        printf("check not passed\n");
+#endif
       }
     }
     else
     {
+#ifdef DEBUG_RETRORIG
       printf("no valid number found\n");
+#endif
     }
 
     
     
     // atoi returns zero if it fails to convert a valid integer. This is at the same time the default display.
     //displayNumber=atoi(); 
-    
-    MDFN_printf(_("debug jc: Mednafen is running on display %d called %s\n"),displayNumber,SDL_GetDisplayName(displayNumber));
+    // RetroRig Dual Head Support
+    MDFN_printf(_("Mednafen is running on display %d called %s\n"),displayNumber,SDL_GetDisplayName(displayNumber));
     if(!(window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNumber), SDL_WINDOWPOS_UNDEFINED, newwidth, newheight, window_flags)))
     {
       MDFND_PrintError(SDL_GetError()); 

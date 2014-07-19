@@ -24,16 +24,19 @@ autoreconf -fi
 ./configure
 make -j8
 
+#RetroRig should be installed prior to the next commands!
+
 sudo apt-get remove mednafen
 
 sudo make install
 sudo ln -s /usr/local/bin/mednafen /usr/games/
 
+cd
 #have mednafen create a new config file
 mednafen Sonic\ the\ Hedgehog.bin
 cd .retrorig/
 mv .mednafen/ .mednafen_originalRetroRig
-ln -s /home/yo/.mednafen/ .
+ln -s ~/.mednafen/ .
 
 #insert "export SDL_VIDEO_FULLSCREEN_HEAD=1"
 sudo gedit /usr/share/applications/startXBMC.sh
