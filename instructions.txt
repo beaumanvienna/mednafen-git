@@ -23,8 +23,11 @@ git checkout mednafen-0.9.36.2-SDL2-dual-head
 autoreconf -fi
 ./configure
 make -j8
+strip src/mednafen
 
+###########################################################
 #RetroRig should be installed prior to the next commands!
+###########################################################
 
 sudo apt-get remove mednafen
 
@@ -38,7 +41,7 @@ cd .retrorig/
 mv .mednafen/ .mednafen_originalRetroRig
 ln -s ~/.mednafen/ .
 
-#insert "export SDL_VIDEO_FULLSCREEN_HEAD=1"
+#insert "export SDL_VIDEO_FULLSCREEN_HEAD=0"
 sudo gedit /usr/share/applications/startXBMC.sh
 
 # insert 
