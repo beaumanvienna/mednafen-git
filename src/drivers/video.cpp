@@ -590,7 +590,7 @@ int InitVideo(MDFNGI *gi)
  }
 
  if(_fullscreen)
-  window_flags |= SDL_WINDOW_FULLSCREEN; //FIXME Maybe use fullscreen desktop?
+  window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
  vdriver = MDFN_GetSettingI("video.driver");
 
